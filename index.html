@@ -258,6 +258,19 @@ body.kb .card .setup{display:none}
  .tile{font-size:16px;padding:7px 9px;min-height:40px}
  .cloze{font-size:20px}
 }
+.p-chat{position:relative;background:linear-gradient(180deg,#e6f1ef,#d3e7e4);padding-top:70px}
+.chathead{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:12px 16px;background:#176b67;color:#fff}
+.chathead .av{width:36px;height:36px;border-radius:50%;background:#f2c14e;color:#1d2340;display:grid;place-items:center;font:800 17px/1 var(--f-ui)}
+.chathead b{display:block;font-size:16px}.chathead small{color:#d7ecea;font-size:13px}
+.bub.photo{position:relative;width:min(70%,300px);aspect-ratio:4/3;padding:0;overflow:hidden;border:6px solid #fff;background:#9fd3ea}
+.bub.photo .sun{position:absolute;right:14%;top:12%;width:18%;aspect-ratio:1;border-radius:50%;background:#ffd166}
+.bub.photo .sea{position:absolute;left:0;right:0;top:45%;height:30%;background:#2f86b0}
+.bub.photo .sand{position:absolute;left:0;right:0;bottom:0;height:28%;background:#ecd3a0}
+.bub.photo .umb{position:absolute;left:20%;bottom:18%;width:30%;height:34%;background:linear-gradient(90deg,#e0573f 0 33%,#fff 33% 66%,#e0573f 66%);border-radius:50% 50% 0 0/100% 100% 0 0;clip-path:inset(0 0 55% 0)}
+body.kb .p-song .vinyl,body.kb .p-song .row,body.kb .p-song .status,body.kb .p-song .credit,body.kb .chathead,body.kb .bub.photo,body.kb .tlsvg{display:none}
+body.kb .p-song{justify-content:center}body.kb .p-chat{padding-top:8px}
+@media (max-width:899px){.bub.photo{width:34%}.p-chat{padding-top:60px}.chathead{padding:8px 12px}.chathead .av{width:30px;height:30px}}
+@media (max-width:899px) and (max-height:700px){.bub.photo{display:none}}
 </style>
 </head>
 <body>
@@ -510,6 +523,8 @@ function artFor(card) {
   }
   if (card.poster === 'chat') {
     return `<div class="art"><div class="poster p-chat" aria-label="Text messages between Sara and Giulia">
+      <div class="chathead"><span class="av" aria-hidden="true">S</span><div><b>Sara</b><small>at the seaside</small></div></div>
+      <div class="bub them photo" aria-label="Sara's photo of the beach"><span class="sun"></span><span class="sea"></span><span class="sand"></span><span class="umb"></span></div>
       ${card.chat.map(t => `<div class="bub them" lang="it"><span class="who">Sara</span>${esc(t)}</div>`).join('')}
       <div class="bub me"><span class="who">Giulia</span><span class="typing" aria-label="typing"><i></i><i></i><i></i></span></div></div></div>`;
   }
@@ -906,7 +921,7 @@ function drawEnd(el) {
    <div class="ex">
     <div class="meta"><span class="lv">Finish</span></div>
     <h2 style="font:700 clamp(26px,3vw,38px)/1.1 var(--f-it);margin:0;color:var(--ink)">${done ? 'Brava! Bravo! Badge earned.' : 'Almost there'}</h2>
-    <p class="setup">${done ? 'You rebuilt, typed and said all ten phrases from Giulia’s weekend. The big idea: <b>Sono</b> = now, <b>Ero</b> = background, <b>Sono stata</b> = finished.' : `${left} card${left === 1 ? '' : 's'} still to get right. ${left === 1 ? 'It’s' : 'They’re'} waiting above this card.`}</p>
+    <p class="setup">${done ? 'You rebuilt and typed all ten phrases from Giulia’s weekend. The big idea: <b>Sono</b> = now, <b>Ero</b> = background, <b>Sono stata</b> = finished.' : `${left} card${left === 1 ? '' : 's'} still to get right. ${left === 1 ? 'It’s' : 'They’re'} waiting above this card.`}</p>
     <div class="stats"><div><b>${first}/${CARDS.length}</b>right first try</div><div><b>${S.best}</b>best streak</div><div><b>${S.spoken}</b>phrases said aloud</div></div>
     <div class="actions">${done ? '' : '<button class="btn btn-pri up">Go to the next open card</button>'}<button class="btn btn-ghost again">Play again from the start</button></div>
    </div>`;
@@ -1011,11 +1026,14 @@ LV.forEach(L => { $('#pill' + L.n).onclick = () => {
 }; });
 
 /* ---------- viewport / keyboard ---------- */
-let lastH = 0;
+let lastH = 0, maxH = 0, maxW = 0;
 function sizeApp() {
   const vv = window.visualViewport;
   const h = Math.round(vv ? vv.height : window.innerHeight);
-  const kbOpen = !!(vv && (window.innerHeight - vv.height > 120 || screen.height - vv.height > screen.height * 0.35) && document.activeElement && document.activeElement.tagName === 'INPUT');
+  if (window.innerWidth !== maxW) { maxW = window.innerWidth; maxH = 0; }
+  maxH = Math.max(maxH, h);
+  const typing = document.activeElement && document.activeElement.tagName === 'INPUT';
+  const kbOpen = !!(typing && ((vv && window.innerHeight - vv.height > 120) || h < maxH * 0.75));
   const kb = kbOpen && matchMedia('(max-width: 899px)').matches;
   const kbChanged = document.body.classList.contains('kb') !== kb;
   document.body.classList.toggle('kb', kb);
