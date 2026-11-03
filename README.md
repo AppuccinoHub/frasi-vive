@@ -1,6 +1,6 @@
 # Frasi Vive · Il sabato di Giulia
 
-**[▶ Play online](https)** — open the live app in your browser.
+**[▶ Play online](https://appuccinohub.github.io/frasi-vive/)** — open the live app in your browser.
 
 
 A 10-card Italian 3 Honors pilot built on **phrase chunks**: students listen to a whole Italian phrase, read it, rebuild or type it, and say it out loud.
